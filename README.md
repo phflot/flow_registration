@@ -13,7 +13,7 @@ To install the toolbox run the ```set_path.m``` script and ```savepath``` to mak
 
 ## Requirements
 
-To run this toolbox, MATLAB 2018b onwards with configured C++ compiler (check [here](https://www.mathworks.com/support/requirements/supported-compilers.html) for supported compilers).
+To run this toolbox, MATLAB 2018b onwards with configured C++ compiler (check [here](https://www.mathworks.com/support/requirements/supported-compilers.html) for supported compilers) is required.
 
 ## Getting started
 
