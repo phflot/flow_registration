@@ -1,6 +1,6 @@
 # Flow-Registration: Optical flow based motion compensation / video stabilization / registration for 2-photon imaging data
 
-Toolbox for the compensation and stabilization of multichannel microscopy videos. The code is written in Matlab, Java (IJ Plugin) and C++. The preprint of our paper can be found on [bioRxiv](https://www.biorxiv.org/content/10.1101/2021.07.25.453381v1) and the project website with video results [here](https://www.snnu.uni-saarland.de/flow-registration/).
+Toolbox for the compensation and stabilization of multichannel microscopy videos. The code is written in Matlab, Java (IJ Plugin) and C++. The publication for this toolbox can be found [here](https://doi.org/10.1002/jbio.202100330) and the project website with video results [here](https://www.snnu.uni-saarland.de/flow-registration/).
 
 ![Fig1](img/bg.jpg)
 
