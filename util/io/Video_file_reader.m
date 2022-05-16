@@ -82,5 +82,18 @@ classdef Video_file_reader < handle
             end
         end
     end
+
+    methods (Access = protected)
+        function buffer = bin_buffer(obj, buffer)
+            if obj.bin_size > 1
+                if size(buffer, 4) <= obj.bin_size
+                    buffer = mean(buffer, 4);
+                else
+                    buffer = cast(convn(buffer, obj.downsampling_kernel, 'same'), obj.mat_data_type);
+                    buffer = buffer(:, :, :, ceil(obj.bin_size / 2):obj.bin_size:end);
+                end
+            end
+        end
+    end
 end
 

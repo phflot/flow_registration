@@ -87,10 +87,7 @@ classdef TIFSTACK_file_reader < Video_file_reader
                 end
             end
             
-            if obj.bin_size > 1
-                buffer = cast(convn(buffer, obj.downsampling_kernel, 'same'), obj.mat_data_type);
-                buffer = buffer(:, :, :, ceil(obj.bin_size / 2):obj.bin_size:end);
-            end
+            buffer = obj.bin_buffer(buffer);
         end
         
         function buffer = read_frames(obj, idx)
@@ -120,14 +117,7 @@ classdef TIFSTACK_file_reader < Video_file_reader
                 
             end
             
-            if obj.bin_size > 1
-                buffer = cast(convn(buffer, obj.downsampling_kernel, 'same'), obj.mat_data_type);
-                if (obj.bin_size >= size(buffer, 4))
-                    buffer = buffer(:, :, :, round(size(buffer, 4) / 2));
-                else
-                    buffer = buffer(:, :, :, ceil(obj.bin_size / 2):obj.bin_size:end);
-                end
-            end
+            buffer = obj.bin_buffer(buffer);
         end
         
         function result = has_batch(obj)

@@ -61,9 +61,8 @@ classdef RAWAVI_file_reader < Video_file_reader
                     demosaic(obj.video_reader.readFrame, 'rggb');
             end
             
-            buffer1 = convn(buffer1, obj.downsampling_kernel, 'same');
+            buffer1 = obj.bin_buffer(buffer1);
 
-            buffer1 = uint8(buffer1(:, :, :, ceil(obj.bin_size / 2):obj.bin_size:end));
         end
         
         function buffer1 = read_frames(obj, idx)
@@ -84,9 +83,7 @@ classdef RAWAVI_file_reader < Video_file_reader
                 demosaic(obj.video_reader.readFrame(), 'rggb');
             end
             
-            buffer1 = convn(buffer1, obj.downsampling_kernel, 'same');
-
-            buffer1 = uint8(buffer1(:, :, :, ceil(obj.bin_size / 2):obj.bin_size:end));
+            buffer1 = obj.bin_buffer(buffer1);
         end
         
         function result = has_batch(obj)
