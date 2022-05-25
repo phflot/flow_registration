@@ -36,11 +36,24 @@ function video_file_reader = get_video_file_reader(input_file, ...
             video_file_reader = IMG_file_reader(input_file, ...
                 buffer_size, bin_size, varargin{:});
         case datatypes.HDF5
-            video_file_reader = HDF_file_reader(input_file, ...
+            % todo: factory method here:
+            video_file_reader = get_HDF_file_reader(input_file, ...
                 buffer_size, bin_size, varargin{:});
         otherwise
             error('File format currently not supported');
     end
+end
+
+function hdf_reader = get_HDF_file_reader(input_file, ...
+                buffer_size, bin_size, varargin)
+    try 
+        hdf_reader = HDF_file_reader(input_file, ...
+            buffer_size, bin_size, varargin{:});
+        return;
+    catch
+    end
+    hdf_reader = HDF_file_reader_4D(input_file, ...
+            buffer_size, bin_size, varargin{:});
 end
 
 function datatype = check_input(x)
