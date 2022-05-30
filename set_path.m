@@ -1,12 +1,10 @@
-% Author   : Philipp Flotho
-% Copyright 2021 by Philipp Flotho, All rights reserved.
+% Author   : Philipp Flotho, modification: E. Hennestad
+% Copyright 2022 by Philipp Flotho, All rights reserved.
 
+currentdir = fileparts( mfilename('fullpath') );
 
+addpath(fullfile(currentdir, 'core'));
+addpath(fullfile(currentdir, 'util'));
+addpath(fullfile(currentdir, 'util', 'io'));
 
-addpath(fullfile(pwd, 'core'));
-addpath(fullfile(pwd, 'util'));
-addpath(fullfile(pwd, 'util/io'));
-
-run('core/make.m');
-
-
+run(fullfile(currentdir, 'core', 'make.m'));
