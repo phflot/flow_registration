@@ -58,7 +58,7 @@ BibTeX entry
 ```
 @article{flotea2022a,
     author = {Flotho, P. and Nomura, S. and Kuhn, B. and Strauss, D. J.},
-    title = {Software for Non-Parametric Image Registration of 2-Photon Imaging Data (in press)},
+    title = {Software for Non-Parametric Image Registration of 2-Photon Imaging Data},
     year = {2022},
   journal = {J Biophotonics},
   doi = {https://doi.org/10.1002/jbio.202100330}
