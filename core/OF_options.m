@@ -45,7 +45,8 @@ classdef OF_options < handle & matlab.mixin.Copyable
         save_w = false;
         output_typename = 'double';
         channel_normalization = 'joint';
-        interpolation_method = 'cubic'
+        interpolation_method = 'cubic';
+        update_reference = false;
     end
     
     methods
@@ -83,7 +84,8 @@ classdef OF_options < handle & matlab.mixin.Copyable
                 {'quality', 'balanced', 'fast'})));
             addParameter(p, 'interpolation_method', obj.interpolation_method, ...
                 @(x) obj.isStringOrChar(x) && any(strcmp(x, {'nearest', 'linear', 'cubic'})))
-
+            addParameter(p, 'update_reference', obj.update_reference, ...
+                @(x) islogical(x));
             parse(p, varargin{:});
 
             for i = 1:length(p.Parameters)
