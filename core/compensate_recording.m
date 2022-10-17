@@ -4,15 +4,6 @@
 function reference_frame = compensate_recording(options, ...
     reference_frame)
 
-    if options.n_references > 1
-        if nargin < 2
-            compensate_multi_ref_recording(options);
-        else
-            compensate_multi_ref_recording(options, reference_frame);
-        end
-        return
-    end
-
     if (~exist(options.output_path, 'dir'))
         mkdir(options.output_path);
     end
@@ -30,7 +21,16 @@ function reference_frame = compensate_recording(options, ...
         end
         fprintf('\n\n');
     end
-    
+
+    if options.n_references > 1
+        if nargin < 2
+            compensate_multi_ref_recording(options);
+        else
+            compensate_multi_ref_recording(options, reference_frame);
+        end
+        return
+    end
+
     video_file_reader = options.get_video_file_reader;
     n_channels = video_file_reader.n_channels;
     video_file_writer = get_video_writer(options);
