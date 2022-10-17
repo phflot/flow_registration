@@ -4,6 +4,15 @@
 function reference_frame = compensate_recording(options, ...
     reference_frame)
 
+    if options.n_references > 1
+        if nargin < 2
+            compensate_multi_ref_recording(options);
+        else
+            compensate_multi_ref_recording(options, reference_frame);
+        end
+        return
+    end
+
     if (~exist(options.output_path, 'dir'))
         mkdir(options.output_path);
     end
@@ -137,6 +146,91 @@ function reference_frame = compensate_recording(options, ...
         mapping = multispectral_mapping(c_ref_raw);
         imwrite(mapping, fullfile(options.output_path, 'combined_ref.png'));
     end
+end
+
+function compensate_multi_ref_recording(options, ...
+    reference_frames)
+
+    if options.n_references > 2
+        error("more than two references are currently not supported");
+    end
+
+    if nargin < 2
+        reference_frames = options.get_reference_frame(options.get_video_file_reader());
+    end
+
+    if ~iscell(reference_frames)
+        error("Reference frames need to be in a cell array to work with the multireference mode!")
+    end
+
+    %% metric computation (fast run with parameters depending on min_frames_per_reference):
+    ref = reference_frames{1};
+    
+    options_fast = copy(options);
+    options_fast.n_references = 1;
+    options_fast.quality_setting = 'fast';
+
+    video_file_reader = options_fast.get_video_file_reader();
+
+    energy = [];
+
+    i = 0;
+    while(video_file_reader.has_batch())
+        i = i + 1;
+        buffer = video_file_reader.read_batch();
+
+        c_reg = compensate_inplace(buffer, ref, options_fast);
+        
+        for j = 1:size(buffer, 4)
+            energy(end+1) = get_energy(c_reg(:, :, :, j), ref);
+        end
+    end
+    energy_med = medfilt1(energy', options.min_frames_per_reference);
+    idx = kmeans(medfilt1(energy_med, options.min_frames_per_reference), options.n_references);
+
+    energies = [];
+    for i = 1:options.n_references
+        energies(end + 1) = mean(energy(idx == i));
+    end
+    [~, min_idx] = min(energies);
+    if min_idx ~= 1
+        idx = -idx + max(idx) + 1;
+    end
+
+    video_file_reader = options.get_video_file_reader();
+    video_file_reader.reset();
+    video_file_writer = get_video_writer(options);
+
+    i = 1;
+    while(video_file_reader.has_batch())
+
+        buffer = video_file_reader.read_batch();
+
+        if isempty(options.output_typename)
+            c_reg = zeros(size(buffer));
+        else
+            c_reg = zeros(size(buffer), options.output_typename);
+        end
+
+        idx_tmp = idx(i:size(buffer, 4));
+        i = i + size(buffer, 4);
+
+        for j = 1:options.n_references
+            idx_j = find(idx == j);
+            if isempty(idx_j)
+                continue;
+            end
+            c_reg(:, :, :, idx_j) = compensate_inplace(buffer(:, :, :, idx_j), reference_frames{j}, options);
+        end
+        video_file_writer.write_frames(c_reg);
+    end
+    video_file_writer.close();
+
+    save(fullfile(options.output_path, 'statistics.mat'), ...
+        "idx", "energy");
+
+    save(fullfile(options.output_path, 'reference_frames.mat'), ...
+        "reference_frames");
 end
 
 function [mean_disp, max_disp, mean_div, mean_translation, ...

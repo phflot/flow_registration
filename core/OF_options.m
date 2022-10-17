@@ -47,6 +47,8 @@ classdef OF_options < handle & matlab.mixin.Copyable
         channel_normalization = 'joint';
         interpolation_method = 'cubic';
         update_reference = false;
+        n_references = 1;
+        min_frames_per_reference = 20;
     end
     
     methods
@@ -86,6 +88,10 @@ classdef OF_options < handle & matlab.mixin.Copyable
                 @(x) obj.isStringOrChar(x) && any(strcmp(x, {'nearest', 'linear', 'cubic'})))
             addParameter(p, 'update_reference', obj.update_reference, ...
                 @(x) islogical(x));
+            addParameter(p, 'n_references', obj.n_references, ...
+                @(x) isscalar(x) && x >= 1)
+            addParameter(p, 'min_frames_per_reference', obj.min_frames_per_reference, ...
+                @(x) isscalar(x) && x >= 1)
             parse(p, varargin{:});
 
             for i = 1:length(p.Parameters)
@@ -297,8 +303,47 @@ classdef OF_options < handle & matlab.mixin.Copyable
                 obj.output_format, input_args{:});
         end
         
+        function references = get_multi_reference_frames(obj, video_file_reader)
+
+            references = {};
+
+            if iscell(obj.reference_frames)
+                for image = self.reference_frames
+                    references{end + 1} = imread(image);
+                end
+            end
+
+            options = copy(obj);
+            options.n_references = 1;
+            reference = obj.reference_frames;
+            if nargin < 2
+                return;
+            end
+            if isvector(obj.reference_frames)
+                vid = double(video_file_reader.read_frames(reference));
+                ref = mean(vid, 4);
+                c_reg = compensate_inplace(vid, ref, options);
+                ref = mean(c_reg, 4);
+
+                energy = zeros(1, size(vid, 4));
+                parfor i = 1:size(vid, 4)
+                    energy(i) = get_energy(c_reg(:, :, :, i), ref);
+                end
+                idx = kmeans(medfilt1(energy', 20, 'truncate'), obj.n_references);
+
+                for i = 1:obj.n_references
+                    references{end + 1} = squeeze(mean(c_reg(:, :, :, find(idx == i)), 4));
+                end
+            end
+        end
+
         % returning the reference or preregistering the reference frames
         function reference = get_reference_frame(obj, video_file_reader)
+            if obj.n_references > 1
+                reference = obj.get_multi_reference_frames(video_file_reader);
+                return;
+            end
+
             if isstring(obj.reference_frames) || ...
                     ischar(obj.reference_frames)
                 reference = imread(obj.reference_frames);

@@ -11,5 +11,8 @@ function energy = get_energy(f, ref, sigma)
     [refx, refy] = gradient(imgaussfilt3(double(ref), sigma));
 
     energy = abs(fx - refx) + abs(fy - refy);
-    energy = sum(energy(:));
+    
+    tmp = sort(energy(:));
+
+    energy = sum(tmp(end-ceil(length(tmp) / 200):end));
 end
