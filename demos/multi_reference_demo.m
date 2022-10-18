@@ -30,14 +30,8 @@ options = OF_options(...
 compensate_recording(options);
 
 vid = get_video_file_reader('jupiter_demo/hdf5_comp_minimal/compensated.HDF5');
-vid = vid.read_frames(1:vid.frame_count);
-energy = zeros(1, size(vid, 4));
-ref = squeeze(mean(vid(:, :, :, 100:200), 4));
-parfor i = 1:size(vid, 4)
-    energy(i) = get_energy(vid(:, :, :, i), ref);
-end
 
-implay(mat2gray(vid));
+% implay(mat2gray(vid));
 load('jupiter_demo/hdf5_comp_minimal/statistics.mat')
 load('jupiter_demo/hdf5_comp_minimal/reference_frames.mat')
 ref1 = energy;
@@ -54,3 +48,11 @@ subplot(2, 1, 2);
 imshowpair(reference_frames{1}, reference_frames{2}, 'montage');
 title("Reference frames:")
 
+%% postprocessing to get multiple videos:
+n_videos = sum(diff(idx) ~= 0) + 1;
+for i = 1:n_videos
+    sub_reader = get_multireference_video(vid, idx, i);
+    implay(mat2gray(sub_reader.read_frames(1:sub_reader.frame_count)));
+    fprintf("video %i with %i frames with idx %i to %i\n", ...
+        i, sub_reader.frame_count, sub_reader.idx(1), sub_reader.idx(end));
+end
