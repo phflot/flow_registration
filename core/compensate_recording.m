@@ -216,7 +216,7 @@ function compensate_multi_ref_recording(options, ...
         i = i + size(buffer, 4);
 
         for j = 1:options.n_references
-            idx_j = find(idx == j);
+            idx_j = find(idx_tmp == j);
             if isempty(idx_j)
                 continue;
             end
