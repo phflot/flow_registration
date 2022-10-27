@@ -212,7 +212,7 @@ function compensate_multi_ref_recording(options, ...
             c_reg = zeros(size(buffer), options.output_typename);
         end
 
-        idx_tmp = idx(i:size(buffer, 4));
+        idx_tmp = idx(i:i+size(buffer, 4)-1);
         i = i + size(buffer, 4);
 
         for j = 1:options.n_references
