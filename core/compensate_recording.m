@@ -155,14 +155,21 @@ function compensate_multi_ref_recording(options, ...
         error("more than two references are currently not supported");
     end
 
+    if (~options.verbose)
+        fprintf("Compensating in multireference mode with %i min frames per reference. \n", options.min_frames_per_reference);
+    end
+    
     if nargin < 2
+        if (~options.verbose)
+            fprintf("Starting estimation of the best references...\n");
+        end
         reference_frames = options.get_reference_frame(options.get_video_file_reader());
     end
 
     if ~iscell(reference_frames)
         error("Reference frames need to be in a cell array to work with the multireference mode!")
     end
-
+    
     %% metric computation (fast run with parameters depending on min_frames_per_reference):
     ref = reference_frames{1};
     
@@ -175,6 +182,11 @@ function compensate_multi_ref_recording(options, ...
     energy = [];
 
     i = 0;
+    if (~options.verbose)
+        fprintf('Starting estimation of the energy based metric over %i frames...\n', ...
+            video_file_reader.frame_count / video_file_reader.bin_size);
+        tic;
+    end
     while(video_file_reader.has_batch())
         i = i + 1;
         buffer = video_file_reader.read_batch();
@@ -184,6 +196,9 @@ function compensate_multi_ref_recording(options, ...
         for j = 1:size(buffer, 4)
             energy(end+1) = get_energy(c_reg(:, :, :, j), ref);
         end
+    end
+    if (~options.verbose)
+        fprintf('Finished metric estimation (%i seconds).\n', toc);
     end
     energy_med = medfilt1(energy', options.min_frames_per_reference);
     idx = kmeans(medfilt1(energy_med, options.min_frames_per_reference), options.n_references);
@@ -202,6 +217,7 @@ function compensate_multi_ref_recording(options, ...
     video_file_writer = get_video_writer(options);
 
     i = 1;
+    batch_counter = 1;
     while(video_file_reader.has_batch())
 
         buffer = video_file_reader.read_batch();
@@ -223,6 +239,10 @@ function compensate_multi_ref_recording(options, ...
             c_reg(:, :, :, idx_j) = compensate_inplace(buffer(:, :, :, idx_j), reference_frames{j}, options);
         end
         video_file_writer.write_frames(c_reg);
+        if (~options.verbose)
+            fprintf('Finished batch %i, %i batches left.\n', batch_counter, video_file_reader.batches_left());
+        end
+        batch_counter = batch_counter + 1;
     end
     video_file_writer.close();
 
