@@ -1,4 +1,4 @@
-function c_reg = compensate_inplace(c1, c_ref, options)
+function [c_reg, w] = compensate_inplace(c1, c_ref, options)
 %COMPENSATE_SIMPLE Method that compensates a workspace matrix inplace 
 % and returns the compensated recording
 
