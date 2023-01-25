@@ -7,13 +7,18 @@ function w = get_displacements(c, c_ref, varargin)
     n = size(c, 2);
     t = size(c, 4);
 
-    w = zeros(m, n, 2, t, 'double');
+    if t == 1
+        w = get_displacement(c_ref, ...
+            c, varargin{:});
+    else
+        w = zeros(m, n, 2, t, 'double');
 
-    parfor i = 1:t
-        w_tmp = get_displacement(c_ref, ...
-            c(:, :, :, i), varargin{:});
-
-        w(:, :, :, i) = w_tmp;
+        parfor i = 1:t
+            w_tmp = get_displacement(c_ref, ...
+                c(:, :, :, i), varargin{:});
+    
+            w(:, :, :, i) = w_tmp;
+        end
     end
 end
 

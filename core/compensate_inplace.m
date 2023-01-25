@@ -7,7 +7,7 @@ function [c_reg, w] = compensate_inplace(c1, c_ref, options)
     end
 
     squ = false;
-    if length(size(c1)) == 3
+    if length(size(c1)) == 3 && length(c_ref) == 2
         s = size(c1);
         c1 = reshape(c1, s(1), s(2), 1, s(3));
         squ = true;
@@ -28,7 +28,7 @@ function [c_reg, w] = compensate_inplace(c1, c_ref, options)
 
     if strcmp(options.channel_normalization, 'separate')
         c_ref_low = mat2gray_multichannel(...
-            imgaussfilt3_multichannel(double(c_ref), options), tmp);
+            imgaussfilt3_multichannel(double(c_ref), options), c_low);
     else
         c_ref_low = imgaussfilt3_multichannel(double(c_ref), options);
         c_ref_low = (c_ref_low - min_ref) / (max_ref - min_ref);
