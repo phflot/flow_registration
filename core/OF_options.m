@@ -46,6 +46,7 @@ classdef OF_options < handle & matlab.mixin.Copyable
         output_typename = 'double';
         channel_normalization = 'joint';
         interpolation_method = 'cubic';
+        cc_initialization = false;
         update_reference = false;
         n_references = 1;
         min_frames_per_reference = 20;
@@ -92,6 +93,7 @@ classdef OF_options < handle & matlab.mixin.Copyable
                 @(x) isscalar(x) && x >= 1)
             addParameter(p, 'min_frames_per_reference', obj.min_frames_per_reference, ...
                 @(x) isscalar(x) && x >= 1)
+            addParameter(p, 'cc_initialization', obj.cc_initialization);
             parse(p, varargin{:});
 
             for i = 1:length(p.Parameters)
