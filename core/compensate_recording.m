@@ -94,6 +94,8 @@ function reference_frame = compensate_recording(options, ...
             if options.cc_initialization
                 w_init = get_displacements_cc(c1, c_ref);
                 w_init = mean(w_init, 4);
+            else
+                w_init = zeros(size(c_ref, 1), size(c_ref, 2), 2, "double");
             end
 
             w_init = get_displacements( ...
@@ -223,6 +225,12 @@ function compensate_multi_ref_recording(options, ...
 
     i = 1;
     batch_counter = 1;
+    mean_disp = [];
+    max_disp = [];
+
+    mean_div = [];
+    mean_translation = [];
+
     while(video_file_reader.has_batch())
 
         buffer = video_file_reader.read_batch();
@@ -232,6 +240,10 @@ function compensate_multi_ref_recording(options, ...
         else
             c_reg = zeros(size(buffer), options.output_typename);
         end
+        mean_disp_buffer = zeros(1, size(buffer, 4));
+        max_disp_buffer = zeros(1, size(buffer, 4));
+        mean_div_buffer = zeros(1, size(buffer, 4));
+        mean_translation_buffer = zeros(1, size(buffer, 4));        
 
         idx_tmp = idx(i:i+size(buffer, 4)-1);
         i = i + size(buffer, 4);
@@ -241,9 +253,18 @@ function compensate_multi_ref_recording(options, ...
             if isempty(idx_j)
                 continue;
             end
-            c_reg(:, :, :, idx_j) = compensate_inplace(buffer(:, :, :, idx_j), reference_frames{j}, options);
+            [c_reg(:, :, :, idx_j), w] = compensate_inplace(buffer(:, :, :, idx_j), reference_frames{j}, options);
+            mean_disp_buffer(idx_j) = squeeze(mean(mean(sqrt(w(:, :, 1, :).^2 + w(:, :, 2, :).^2), 1), 2));
+            max_disp_buffer(idx_j) = squeeze(max(max(sqrt(w(:, :, 1, :).^2 + w(:, :, 2, :).^2), [], 1), [], 2));
+            
+            mean_div_buffer(idx_j) = get_mean_divergence(w);
+            mean_translation_buffer(idx_j) = get_mean_translation(w);
         end
         video_file_writer.write_frames(c_reg);
+        mean_disp(end+1:end+length(mean_disp_buffer)) = mean_disp_buffer;
+        max_disp(end+1:end+length(mean_disp_buffer)) = max_disp_buffer;
+        mean_div(end+1:end+length(mean_disp_buffer)) = mean_div_buffer;
+        mean_translation(end+1:end+length(mean_disp_buffer)) = mean_translation_buffer;
         if (~options.verbose)
             fprintf('Finished batch %i, %i batches left.\n', batch_counter, video_file_reader.batches_left());
         end
@@ -251,11 +272,14 @@ function compensate_multi_ref_recording(options, ...
     end
     video_file_writer.close();
 
-    save(fullfile(options.output_path, 'statistics.mat'), ...
-        "idx", "energy");
 
-    save(fullfile(options.output_path, 'reference_frames.mat'), ...
-        "reference_frames");
+    if options.save_meta_info
+        save(fullfile(options.output_path, 'statistics.mat'), ...
+            'mean_disp', 'max_disp', 'mean_div', 'mean_translation', ...
+            "idx", "energy");
+        save(fullfile(options.output_path, 'reference_frames.mat'), ...
+            "reference_frames");
+    end
 end
 
 function [mean_disp, max_disp, mean_div, mean_translation, ...
@@ -285,6 +309,8 @@ function [mean_disp, max_disp, mean_div, mean_translation, ...
         w_cc = get_displacements_cc(c1, c_ref);
         c1 = compensate_sequence_uv(c1, ...
             c_ref, w_cc);
+    else
+        w_cc = zeros(size(w_init));
     end
 
     w = get_displacements( ...

@@ -39,12 +39,24 @@ ref2 = energy;
 ref2(idx == 1) = nan;
 ref1(idx == 2) = nan;
 figure;
-subplot(2, 1, 1);
+subplot(3, 1, 1);
 hold on
 plot(ref1);
 plot(ref2);
 title("Energy");
-subplot(2, 1, 2);
+
+subplot(3, 1, 2);
+hold on
+ref1 = max_disp;
+ref2 = max_disp;
+ref2(idx == 1) = nan;
+ref1(idx == 2) = nan;
+plot(ref1);
+plot(ref2);
+legend({"Max displacements, ref1", "Max displacements, ref2"});
+title("Max displacements");
+
+subplot(3, 1, 3);
 imshowpair(reference_frames{1}, reference_frames{2}, 'montage');
 title("Reference frames:")
 
