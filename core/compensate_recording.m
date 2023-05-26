@@ -279,12 +279,17 @@ function compensate_multi_ref_recording(options, ...
     end
     video_file_writer.close();
 
+    if strcmp(options.naming_convention, "default")
+        filename_pref = "";
+    else
+        filename_pref = strcat(video_file_reader.input_file_name, "_");
+    end
 
     if options.save_meta_info
-        save(fullfile(options.output_path, 'statistics.mat'), ...
+        save(fullfile(options.output_path, strcat(filename_pref, 'statistics.mat')), ...
             'mean_disp', 'max_disp', 'mean_div', 'mean_translation', ...
             "idx", "energy");
-        save(fullfile(options.output_path, 'reference_frames.mat'), ...
+        save(fullfile(options.output_path, strcat(filename_pref, 'reference_frame.mat')), ...
             "reference_frames");
     end
 end
