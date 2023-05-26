@@ -29,6 +29,8 @@ classdef RAWAVI_file_reader < Video_file_reader
             obj.buffer_size = options.buffer_size;
             obj.bin_size = options.bin_size;
             obj.options = options;
+            [~, f_name, ~] = fileparts(options.input_file);
+            obj.input_file_name = f_name;
         end
         
         function open(obj)

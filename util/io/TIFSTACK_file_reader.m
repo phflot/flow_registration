@@ -34,6 +34,9 @@ classdef TIFSTACK_file_reader < Video_file_reader
             if nargin > 2 && ~isempty(bin_size)
                 obj.bin_size = bin_size;
             end
+
+            [~, f_name, ~] = fileparts(input_file);
+            obj.input_file_name = f_name;
             
             obj.tif = Tiff(input_file, 'r');
             obj.n_channels = obj.tif.getTag('SamplesPerPixel');

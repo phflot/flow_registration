@@ -34,6 +34,9 @@ classdef MDF_file_reader < Video_file_reader
             end
             
             obj.file_name = input_file;
+
+            [~, f_name, ~] = fileparts(input_file);
+            obj.input_file_name = f_name;
                         
             obj.buffer_size = buffer_size;
             obj.bin_size = bin_size;

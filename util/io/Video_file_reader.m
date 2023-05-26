@@ -8,6 +8,7 @@ classdef Video_file_reader < handle
         n_channels;
         bitdepth;
         mat_data_type;
+        input_file_name;
     end
     
     properties(Access = protected)

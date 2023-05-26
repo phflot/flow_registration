@@ -43,6 +43,7 @@ classdef OF_options < handle & matlab.mixin.Copyable
         reference_frames = 50:500;
         save_meta_info = true;
         save_w = false;
+        save_valid_mask = false;
         output_typename = 'double';
         channel_normalization = 'joint';
         interpolation_method = 'cubic';
@@ -50,6 +51,7 @@ classdef OF_options < handle & matlab.mixin.Copyable
         update_reference = false;
         n_references = 1;
         min_frames_per_reference = 20;
+        naming_convention = 'default'
     end
     
     methods
@@ -94,6 +96,11 @@ classdef OF_options < handle & matlab.mixin.Copyable
             addParameter(p, 'min_frames_per_reference', obj.min_frames_per_reference, ...
                 @(x) isscalar(x) && x >= 1)
             addParameter(p, 'cc_initialization', obj.cc_initialization);
+            addParameter(p, 'save_valid_mask', obj.save_valid_mask, ...
+                @(x) isscalar(x) && islogical(x));
+            addParameter(p, 'naming_convention', obj.naming_convention, ...
+                @(x) obj.isStringOrChar(x) &&  any(strcmp(x, ...
+                {'default', 'batch'})));
             parse(p, varargin{:});
 
             for i = 1:length(p.Parameters)
@@ -288,8 +295,15 @@ classdef OF_options < handle & matlab.mixin.Copyable
 %                 [result, idx] = obj.check_extension(ext);
                 filename = obj.output_file_name;
             else
-                filename = fullfile(obj.output_path, ['compensated.' ...
-                    obj.output_format]);
+                if strcmp(obj.naming_convention, "default")
+                    filename = fullfile(obj.output_path, ['compensated.' ...
+                        obj.output_format]);
+                else
+                    reader = obj.get_video_file_reader;
+                    filename = fullfile(obj.output_path, ...
+                        strcat(reader.input_file_name, '_', 'compensated.', ...
+                        obj.output_format));
+                end
             end
 
             input_args = {};

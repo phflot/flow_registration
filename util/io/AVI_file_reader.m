@@ -27,6 +27,9 @@ classdef AVI_file_reader < Video_file_reader
                 obj.bin_size = bin_size;
             end
             
+            [~, f_name, ~] = fileparts(input_file);
+            obj.input_file_name = f_name;
+
             obj.video_reader = VideoReader(input_file);
             obj.frame_count = obj.video_reader.NumberOfFrames;
             

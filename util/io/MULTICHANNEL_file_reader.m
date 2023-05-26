@@ -67,7 +67,14 @@ classdef MULTICHANNEL_file_reader < Video_file_reader
                     end
                 end
             end
-            
+
+            obj.input_file_name = "";
+            for i = 1:length(input_files)
+                obj.input_file_name = strcat(obj.input_file_name, ...
+                    obj.filereaders.input_file_name);
+            end
+
+
             if different_bits
                 % if bitdepth is different, taking the highest bitrate:
                 warning("Different bitrate in the different channels, using %i bits and double output", obj.bitdepth);

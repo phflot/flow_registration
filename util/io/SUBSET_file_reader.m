@@ -31,6 +31,8 @@ classdef SUBSET_file_reader < Video_file_reader
             obj.bitdepth = video_file_reader.bitdepth;
             obj.mat_data_type = video_file_reader.mat_data_type;
             obj.frame_count = length(idx);
+            
+            obj.input_file_name = video_file_reader.input_file_name;
         end
         
         function buffer = read_batch(obj)

@@ -31,6 +31,8 @@ classdef MAT_file_reader < Video_file_reader & DS_file_reader
             obj = obj@DS_file_reader([1, 2, 3], varargin{:});
             
             obj.input_file = input_file;
+            [~, f_name, ~] = fileparts(input_file);
+            obj.input_file_name = f_name;
             
             if nargin > 1 && ~isempty(buffer_size)
                 obj.buffer_size = buffer_size;
