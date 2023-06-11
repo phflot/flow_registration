@@ -118,6 +118,10 @@ function reference_frame = compensate_recording(options, ...
             end
         end
 
+        if ~options.update_initialization_w
+            w_init = zeros(size(w_init), 'double');
+        end
+
         [mean_disp_tmp, max_disp_tmp, mean_div_tmp, mean_translation_tmp, ...
             c_reg, c_ref_upd, w_init, w] ...
             = get_eval(options, buffer, c_ref, c_ref_raw, w_init, weight);

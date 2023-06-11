@@ -49,6 +49,7 @@ classdef OF_options < handle & matlab.mixin.Copyable
         interpolation_method = 'cubic';
         cc_initialization = false;
         update_reference = false;
+        update_initialization_w = true;
         n_references = 1;
         min_frames_per_reference = 20;
         naming_convention = 'default'
@@ -90,6 +91,8 @@ classdef OF_options < handle & matlab.mixin.Copyable
             addParameter(p, 'interpolation_method', obj.interpolation_method, ...
                 @(x) obj.isStringOrChar(x) && any(strcmp(x, {'nearest', 'linear', 'cubic'})))
             addParameter(p, 'update_reference', obj.update_reference, ...
+                @(x) islogical(x));
+            addParameter(p, 'update_initialization_w', obj.update_initialization_w, ...
                 @(x) islogical(x));
             addParameter(p, 'n_references', obj.n_references, ...
                 @(x) isscalar(x) && x >= 1)
