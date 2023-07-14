@@ -52,7 +52,8 @@ classdef OF_options < handle & matlab.mixin.Copyable
         update_initialization_w = true;
         n_references = 1;
         min_frames_per_reference = 20;
-        naming_convention = 'default'
+        naming_convention = 'default';
+        save_valid_idx = false;
     end
     
     methods
@@ -104,6 +105,8 @@ classdef OF_options < handle & matlab.mixin.Copyable
             addParameter(p, 'naming_convention', obj.naming_convention, ...
                 @(x) obj.isStringOrChar(x) &&  any(strcmp(x, ...
                 {'default', 'batch'})));
+            addParameter(p, 'save_valid_idx', obj.save_valid_idx, ...
+                @(x) isscalar(x) && islogical(x));
             parse(p, varargin{:});
 
             for i = 1:length(p.Parameters)
@@ -406,7 +409,7 @@ classdef OF_options < handle & matlab.mixin.Copyable
                 else
                     c1 = mat2gray(imgaussfilt3_multichannel(tmp, obj, [1 1 0.5]));
                 end
-                [c_reg_tmp, ~] = compensate_sequence( ...
+                c_reg_tmp = compensate_sequence( ...
                     c1, mean(c1, 4),  ...
                     tmp, mean(tmp, 4), ...
                     'weight', weight_2d, ...

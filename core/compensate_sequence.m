@@ -1,7 +1,7 @@
 % Author   : Philipp Flotho
 % Copyright 2021 by Philipp Flotho, All rights reserved.
 
-function [c_reg, w] = compensate_sequence( c, c_ref, c_raw, c_ref_raw, varargin )
+function [c_reg, w, idx] = compensate_sequence( c, c_ref, c_raw, c_ref_raw, varargin )
 %COMPENSATE_SEQUENCE compensates a sequence w.r.t. c_ref
 
     if ndims(c) == 3
@@ -11,5 +11,5 @@ function [c_reg, w] = compensate_sequence( c, c_ref, c_raw, c_ref_raw, varargin 
 
     w = get_displacements(c, c_ref, varargin{:});
     
-    c_reg = compensate_sequence_uv(c_raw, c_ref_raw, w);
+    [c_reg, idx] = compensate_sequence_uv(c_raw, c_ref_raw, w);
 end

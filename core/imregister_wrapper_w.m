@@ -1,7 +1,7 @@
 % Author   : Philipp Flotho
 % Copyright 2021 by Philipp Flotho, All rights reserved.
 
-function [ registered ] = imregister_wrapper_w( f2, w, f1, interpolation_method )
+function [ registered, idx ] = imregister_wrapper_w( f2, w, f1, interpolation_method )
 
     if (nargin < 3)
         f1 = f2;
@@ -39,6 +39,7 @@ function [ registered ] = imregister_wrapper_w( f2, w, f1, interpolation_method 
     
     idx = isnan(registered);
     registered(idx) = f1(idx);
+    idx = ~idx;
 %     registered = cast(registered, class(f2));
 end
 
