@@ -39,7 +39,7 @@ function [ registered, idx ] = imregister_wrapper_w( f2, w, f1, interpolation_me
     
     idx = isnan(registered);
     registered(idx) = f1(idx);
-    idx = ~idx;
+    idx = ~idx(:, :, 1);
 %     registered = cast(registered, class(f2));
 end
 
