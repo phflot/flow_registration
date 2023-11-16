@@ -21,6 +21,8 @@ function w = get_displacement( fixed, moving, varargin )
     v_init = zeros(m, n);
     
     weight = ones(1, n_channels, 'double') / n_channels;
+
+    const_assumption = "gc";
     
     a_data = 0.45 * ones(1, n_channels);
     
@@ -56,11 +58,23 @@ function w = get_displacement( fixed, moving, varargin )
                 a_smooth = varargin{k + 1};
             case 'min_level'
                 min_level = varargin{k + 1};
+            case 'constancy_assumption'
+                const_assumption = varargin{k + 1};
             otherwise
                 % fprintf(['could not parse input argument ' varargin{k} '\n']);
         end
     end
         
+    switch const_assumption
+        case 'gc'
+            get_motion_tensor = @get_motion_tensor_gc;
+        case 'gray'
+            get_motion_tensor = @get_motion_tensor;
+        otherwise
+            fprintf("Could not parse constancy assumption, setting to default gc!\n");
+            get_motion_tensor = @get_motion_tensor_gc;
+    end
+
 
     f1_low = double(fixed);
     f2_low = double(moving);
@@ -132,7 +146,7 @@ function w = get_displacement( fixed, moving, varargin )
         for j = 1:n_channels
             [ J11(:, :, j), J22(:, :, j), J33(:, :, j), ...
                 J12(:, :, j), J13(:, :, j), J23(:, :, j)] = ...
-                get_motion_tensor_gc(...
+                get_motion_tensor(...
                 f1_level(:, :, j), tmp(:, :, j), hx, hy);
         end
         
