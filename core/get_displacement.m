@@ -69,7 +69,7 @@ function w = get_displacement( fixed, moving, varargin )
         case 'gc'
             get_motion_tensor = @get_motion_tensor_gc;
         case 'gray'
-            get_motion_tensor = @get_motion_tensor;
+            get_motion_tensor = @get_motion_tensor_gray;
         otherwise
             fprintf("Could not parse constancy assumption, setting to default gc!\n");
             get_motion_tensor = @get_motion_tensor_gc;

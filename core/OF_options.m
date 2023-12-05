@@ -54,6 +54,7 @@ classdef OF_options < handle & matlab.mixin.Copyable
         min_frames_per_reference = 20;
         naming_convention = 'default';
         save_valid_idx = false;
+        constancy_assumption = "gc"
     end
     
     methods
@@ -107,6 +108,8 @@ classdef OF_options < handle & matlab.mixin.Copyable
                 {'default', 'batch'})));
             addParameter(p, 'save_valid_idx', obj.save_valid_idx, ...
                 @(x) isscalar(x) && islogical(x));
+            addParameter(p, 'constancy_assumption', obj.constancy_assumption, ...
+                @(x) isstring(x) && ismember(x, {'gc', 'gray'}));
             parse(p, varargin{:});
 
             for i = 1:length(p.Parameters)

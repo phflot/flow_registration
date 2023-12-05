@@ -7,10 +7,11 @@ function [ J11, J22, J33, J12, J13, J23] = get_motion_tensor_gray...
     f1 = padarray(f1, [1 1], 'symmetric');
     f2 = padarray(f2, [1 1], 'symmetric');
 
-    [fx1, ~ ] = gradient(f1, hx, hy);
-    [fx2, ~ ] = gradient(f2, hx, hy);
+    [fx1, fy1 ] = gradient(f1, hx, hy);
+    [fx2, fy2 ] = gradient(f2, hx, hy);
     
     fx = 0.5 * (fx1 + fx2);
+    fy = 0.5 * (fy1 + fy2);
     ft = f2 - f1;
     
     fx = padarray(fx(2:end-1, 2:end-1), [1 1], 'symmetric');
