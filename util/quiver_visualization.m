@@ -1,9 +1,13 @@
 % Author   : Philipp Flotho
 % Copyright 2021 by Philipp Flotho, All rights reserved.
     
-function quiver_viz = quiver_visualization(img, w)
+function quiver_viz = quiver_visualization(img, w, scale)
 %QUIVER_VISULAIZATION function for the quiver visualization
 %   Takes an image and a displacementfield w as input
+
+    if nargin < 3
+        scale = 1;
+    end
 
     [n, m, ~] = size(w);
 
@@ -21,7 +25,7 @@ function quiver_viz = quiver_visualization(img, w)
     X_w = X_w(:, 2:end-1);
     Y_w = Y_w(:, 2:end-1);
     w = w(2:end-1, 2:end-1, :);
-    quiver(X_w, Y_w, w(:, :, 1), w(:, :, 2), 1, 'LineWidth', 2, ...
+    quiver(X_w, Y_w, w(:, :, 1), w(:, :, 2), scale, 'LineWidth', 2, ...
     'Color', 'w');
     for i = 1:length(lh)
         lh(i).Color=[0,0,0,0.75];
