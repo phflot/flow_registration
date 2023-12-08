@@ -10,9 +10,9 @@ function w = get_optical_flow(c, varargin)
     w = zeros(m, n, 2, t, 'double');
     w_tmp = zeros(m, n, 2, 'double');
 
-    for i = 2:t
-        w_tmp = get_displacement(c(:, :, :, i-1), ...
-            c(:, :, :, i), 'w_init', w_tmp,  varargin{:});
+    for i = 1:t-1
+        w_tmp = get_displacement(c(:, :, :, i), ...
+            c(:, :, :, i+1), 'w_init', w_tmp,  varargin{:});
 
         w(:, :, :, i) = w_tmp;
     end
