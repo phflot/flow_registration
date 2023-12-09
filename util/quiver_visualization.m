@@ -33,5 +33,9 @@ function quiver_viz = quiver_visualization(img, w, scale)
     quiver_viz = getframe(gca).cdata;
     set(gca,'visible','off')
     hold off
+    [n_quiv, m_quiv, ~] = size(quiver_viz);
+    if n_quiv ~= n | m_quiv ~= m
+        quiver_viz = imresize(quiver_viz, [n, m]);
+    end
 end
 
